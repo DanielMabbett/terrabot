@@ -18,10 +18,18 @@ terraform plan -no-color > plan.txt
 # Note: For you to use this in an azure devops pipeline, make use of the pipeline variables 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
 # set your PAC by export PAC=yourpac
-terrabot push azure-devops --organisation myorg --project "my project" --repo myrepo --pull-request-id 1 --token $PAC
+
+terrabot push \
+--organisation "test" \
+--project "test" \
+--repo "test" \
+--pull-request-id 1 \
+--token "yourtoken" \
+--plan test-plan.txt
+
 ```
 
-## Contributors 
+## Contributors
 
-Contributions are welcome! 
+Contributions are welcome!
 
