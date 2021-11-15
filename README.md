@@ -44,7 +44,7 @@ terrabot push azure-devops \
 
 Then it provides others in your pull requests with viewing the changes without having to leave the page:
 
-![Screenshot](./images/screenshot1.png)
+![Screenshot](./images/screenshot2.png)
 
 ## Contributors
 
