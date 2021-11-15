@@ -16,9 +16,6 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "terrabot",
 		Short: "A generator for Cobra based Applications",
-		Long: `Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
 	}
 )
 
@@ -39,8 +36,9 @@ func init() {
 	viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")
 	viper.SetDefault("license", "apache")
 
-	// rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(pushCmd)
+	pushCmd.AddCommand(pushAzureDevOpsCmd)
 }
 
 func initConfig() {

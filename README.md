@@ -1,4 +1,9 @@
 # terrabot
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/danielmabbett/terrabot)](https://goreportcard.com/report/github.com/danielmabbett/terrabot)
+
+[![Go](https://github.com/DanielMabbett/terrabot/actions/workflows/go.yml/badge.svg)](https://github.com/DanielMabbett/terrabot/actions/workflows/go.yml)
+
 Push Terraform Plans back to your PRs and make your process more gitops!
 
 The idea originally came from the https://github.com/runatlantis/atlantis tool so check this out first and see if it fulfills your requirements.
@@ -19,7 +24,7 @@ terraform plan -no-color > plan.txt
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
 # set your PAC by export PAC=yourpac
 
-terrabot push \
+terrabot push azure-devops \
 --organisation "test" \
 --project "test" \
 --repo "test" \
@@ -28,6 +33,10 @@ terrabot push \
 --plan test-plan.txt
 
 ```
+
+Then it provides others in your pull requests with viewing the changes without having to leave the page:
+
+![Screenshot](./images/screenshot1.png)
 
 ## Contributors
 
