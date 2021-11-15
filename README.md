@@ -13,6 +13,8 @@ The idea originally came from the https://github.com/runatlantis/atlantis tool s
 This is not designed to be a fully "fleshed-out" tool such as Atlantis. 
 It focuses only on sending a comment back to your pull request to let the reviewers know details of the intended changes. 
 
+The advantages of a light weight tool such as *terrabot* is that you can run it on an agent/host which is not routeable to from public services (i.e. A self-hosted Azure DevOps agent that is behind a firewall).
+
 ## Usage
 
 ```sh
