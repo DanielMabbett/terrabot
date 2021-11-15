@@ -24,7 +24,7 @@ terraform plan -no-color > plan.txt
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&tabs=yaml
 # set your PAC by export PAC=yourpac
 
-terrabot push \
+terrabot push azure-devops \
 --organisation "test" \
 --project "test" \
 --repo "test" \
