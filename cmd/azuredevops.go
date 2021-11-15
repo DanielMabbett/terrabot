@@ -55,17 +55,11 @@ var pushAzureDevOpsCmd = &cobra.Command{
 			return
 		}
 
-		// var text string = "Plan:"
-
-		// read the whole file at once
 		b, err := ioutil.ReadFile(planFile)
 		if err != nil {
 			panic(err)
 		}
 		s := string(b)
-		//check whether s contains substring text
-		// fmt.Println(strings.Contains(s, text))
-		// fmt.Println(strings.Trim(s, text))
 
 		f, err := os.Open(planFile)
 		if err != nil {
@@ -73,13 +67,11 @@ var pushAzureDevOpsCmd = &cobra.Command{
 		}
 		defer f.Close()
 
-		// Splits on newlines by default.
 		scanner := bufio.NewScanner(f)
 
 		line := 1
 
 		plan := ""
-		// https://golang.org/pkg/bufio/#Scanner.Scan
 		for scanner.Scan() {
 			if strings.Contains(scanner.Text(), "Plan:") {
 				plan = scanner.Text()
