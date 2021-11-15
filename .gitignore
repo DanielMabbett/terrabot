@@ -16,3 +16,9 @@
 
 # terrabot executable
 terrabot
+
+# test files 
+test/*
+
+# env test file 
+env.sh
