@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# terrabot executable
+terrabot
+
+# test files 
+test/*
+
+# env test file 
+env.sh
