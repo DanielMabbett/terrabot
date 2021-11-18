@@ -1,12 +1,8 @@
 package cmd
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"strings"
 
 	"github.com/microsoft/azure-devops-go-api/azuredevops"
 	"github.com/microsoft/azure-devops-go-api/azuredevops/git"
@@ -22,6 +18,8 @@ func init() {
 	pushAzureDevOpsCmd.Flags().IntVarP(&pullRequestID, "pull-request-id", "i", 0, "The pull request ID in for the Git Repo in Azure DevOps Services.")
 	pushAzureDevOpsCmd.Flags().StringVarP(&personalAccessToken, "token", "t", "", "Your PAC to Azure DevOps Services.")
 	pushAzureDevOpsCmd.Flags().StringVarP(&planFile, "plan", "", "plan.txt", "The terraform plan file. Currently only supports .txt file outputs.")
+	// todo: Consider making this a persistent flag
+	pushAzureDevOpsCmd.Flags().BoolVarP(&gruntBool, "grunt", "g", false, "Enable terragrunt usage")
 	pushAzureDevOpsCmd.MarkFlagRequired("organisation")
 	pushAzureDevOpsCmd.MarkFlagRequired("project")
 	pushAzureDevOpsCmd.MarkFlagRequired("repo")
@@ -36,13 +34,13 @@ var repo string
 var pullRequestID int
 var personalAccessToken string
 var planFile string
+var gruntBool bool
 
 var pushAzureDevOpsCmd = &cobra.Command{
 	Use:   "azure-devops",
 	Short: "Push a comment to a Pull Request to Azure DevOps services.",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// azdo alternative
 		organizationUrl := "https://dev.azure.com/" + organisation
 		connection := azuredevops.NewPatConnection(organizationUrl, personalAccessToken)
 
@@ -55,70 +53,59 @@ var pushAzureDevOpsCmd = &cobra.Command{
 			return
 		}
 
-		b, err := ioutil.ReadFile(planFile)
-		if err != nil {
-			panic(err)
-		}
-		s := string(b)
+		if gruntBool {
+			fmt.Println("[information] terragrunt plans are partially supported (no overviews). Continuing...")
 
-		f, err := os.Open(planFile)
-		if err != nil {
-			panic(err)
-		}
-		defer f.Close()
+			details := RetrieveGruntFileContents(planFile)
+			content := GenerateContentString("Terragrunt overview not supported", details)
 
-		scanner := bufio.NewScanner(f)
-
-		line := 1
-
-		plan := ""
-		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "Plan:") {
-				plan = scanner.Text()
-			}
-
-			line++
-		}
-		if err := scanner.Err(); err != nil {
-			panic(err)
-		}
-
-		fmt.Println(plan)
-		overview := plan
-		overviewWrap := "`" + overview + "`"
-
-		fullDetails := s
-		fullDetailsWrap := "```\n" + fullDetails + "\n```"
-
-		content := `🤖 Terrabot Response ⚡
-						
-Overview
-` + overviewWrap + `
-<details><summary>Full Details</summary>
-
-` + fullDetailsWrap
-
-		thread := git.CreateThreadArgs{
-			CommentThread: &git.GitPullRequestCommentThread{
-				Comments: &[]git.Comment{
-					{
-						Content: PtrString(content),
+			thread := git.CreateThreadArgs{
+				CommentThread: &git.GitPullRequestCommentThread{
+					Comments: &[]git.Comment{
+						{
+							Content: PtrString(content),
+						},
 					},
 				},
-			},
-			PullRequestId: &pullRequestID,
-			Project:       &project,
-			RepositoryId:  &repo,
-		}
+				PullRequestId: &pullRequestID,
+				Project:       &project,
+				RepositoryId:  &repo,
+			}
 
-		_, err = gitClient.CreateThread(ctx, thread)
-		if err != nil {
-			fmt.Println("Error on Creating Thread")
-			fmt.Println(err)
-			return
+			_, err = gitClient.CreateThread(ctx, thread)
+			if err != nil {
+				fmt.Println("Error on Creating Thread")
+				fmt.Println(err)
+				return
+			}
+			fmt.Println("Sucessfully pushed thread to Azure DevOps Services.")
+
+		} else {
+
+			overview, details := RetrieveFileContents(planFile)
+			content := GenerateContentString(overview, details)
+
+			thread := git.CreateThreadArgs{
+				CommentThread: &git.GitPullRequestCommentThread{
+					Comments: &[]git.Comment{
+						{
+							Content: PtrString(content),
+						},
+					},
+				},
+				PullRequestId: &pullRequestID,
+				Project:       &project,
+				RepositoryId:  &repo,
+			}
+
+			_, err = gitClient.CreateThread(ctx, thread)
+			if err != nil {
+				fmt.Println("Error on Creating Thread")
+				fmt.Println(err)
+				return
+			}
+			fmt.Println("Sucessfully pushed thread to Azure DevOps Services.")
 		}
 
 	},
 }
-
-func PtrString(v string) *string { return &v }
