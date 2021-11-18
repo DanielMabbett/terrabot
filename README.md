@@ -23,6 +23,7 @@ curl https://raw.githubusercontent.com/DanielMabbett/terrabot/master/install.sh 
 
 ## Usage
 
+Example 1: Terraform Support
 ```sh
 # Export the text of your terraform plan out
 terraform plan -no-color > plan.txt
@@ -38,7 +39,23 @@ terrabot push azure-devops \
 --repo "test" \
 --pull-request-id 1 \
 --token "yourtoken" \
---plan test-plan.txt
+--plan tfplan.txt
+
+```
+
+Example 2: Terragrunt Support
+```sh
+# Export the text of your terraform plan out
+terragrunt run-all plan -no-color > gruntplan.txt
+
+terrabot push azure-devops \
+--organisation "test" \
+--project "test" \
+--repo "test" \
+--pull-request-id 1 \
+--token "yourtoken" \
+--plan gruntplan.txt \
+--grunt
 
 ```
 
