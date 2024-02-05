@@ -8,6 +8,8 @@ jobs:
   release-linux-amd64:
     name: release linux/amd64
     runs-on: ubuntu-latest
+    outputs:
+      binary_name: ${{ steps.build.outputs.binary_name }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -18,9 +20,12 @@ jobs:
           go-version: '1.21'
 
       - name: Build project
+        id: build
         run: |
-          export RELEASE_TAG_NAME=$(echo ${{ github.event.release.tag_name }} | sed 's/^v//') # Remove 'v' prefix from tag name if present
-          export BINARY_NAME=terrabot-${RELEASE_TAG_NAME}-linux-amd64
+          RELEASE_TAG_NAME=$(echo "${{ github.event.release.tag_name }}" | sed 's/^v//')
+          BINARY_NAME="terrabot-${RELEASE_TAG_NAME}-linux-amd64"
+          echo "BINARY_NAME=${BINARY_NAME}" >> $GITHUB_ENV
+          echo "BINARY_NAME=${BINARY_NAME}" >> $GITHUB_OUTPUT
           go build -o ${BINARY_NAME} . 
         env:
           GOOS: linux
@@ -33,5 +38,5 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./${{ env.BINARY_NAME }}
-          asset_name: ${{ env.BINARY_NAME }}
+          asset_name: ${{ steps.build.outputs.binary_name }}
           asset_content_type: application/octet-stream
