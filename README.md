@@ -34,7 +34,7 @@ Unlike fully-fledged tools like Atlantis, Terrabot offers a lightweight, focused
 ## 🛠️ Quick Install
 
 ```bash
-curl https://raw.githubusercontent.com/DanielMabbett/terrabot/master/install.sh | bash
+curl https://raw.githubusercontent.com/DanielMabbett/terrabot/main/install.sh | bash
 ```
 
 ## 💡 Usage
