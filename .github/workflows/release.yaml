@@ -9,9 +9,29 @@ jobs:
     name: release linux/amd64
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: wangyoucao577/go-release-action@v1.21
-      with:
-        github_token: ${{ secrets.TOKENTEST }}
-        goos: linux
-        goarch: amd64
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
+
+      - name: Build project
+        run: |
+          export RELEASE_TAG_NAME=$(echo ${{ github.event.release.tag_name }} | sed 's/^v//') # Remove 'v' prefix from tag name if present
+          export BINARY_NAME=terrabot-${RELEASE_TAG_NAME}-linux-amd64
+          go build -o ${BINARY_NAME} . 
+        env:
+          GOOS: linux
+          GOARCH: amd64
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ env.BINARY_NAME }}
+          asset_name: ${{ env.BINARY_NAME }}
+          asset_content_type: application/octet-stream
